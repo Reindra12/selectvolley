@@ -45,7 +45,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class monitoringMainActivity extends AppCompatActivity {
-    public static final String url = "http://192.168.1.32/monitoring/fileupload.php";
+    public static final String url = "http://192.168.1.15/monitoring/fileupload.php";
     EditText idm, tglm, nis, jam, kegiatan, lokasi, user;
     TextView tket;
     Button binput;
@@ -138,41 +138,6 @@ public class monitoringMainActivity extends AppCompatActivity {
         String kegiatanm = kegiatan.getText().toString();
         String lokasim = lokasi.getText().toString();
         String userm = user.getText().toString();
-//        Byte fotom = imageView.getB();
-
-
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-////                        tket.setText(response);
-//                        Toast.makeText(monitoringMainActivity.this, "data berhasil tersimpan", Toast.LENGTH_SHORT).show();
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                tket.setText("error");
-//            }
-//        })
-//        {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<>();
-//
-//                params.put("idm", idmm);
-//                params.put("tglm", tglmm);
-//                params.put("nis", nism);
-//                params.put("jam", jamm);
-//                params.put("kegiatan", kegiatanm);
-//                params.put("lokasi", lokasim);
-//                params.put("user", userm);
-//                params.put("foto", FIle);
-//
-//                return params;
-//            }
-//        }  ;
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        queue.add(stringRequest);
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -183,6 +148,17 @@ public class monitoringMainActivity extends AppCompatActivity {
 //                        loading.dismiss();
                         //Showing toast message of the response
                         Toast.makeText(monitoringMainActivity.this, s , Toast.LENGTH_LONG).show();
+//                        send data when data success
+                        Intent intent = new Intent(monitoringMainActivity.this, detailmonitoringMainActivity.class);
+                        intent.putExtra("gambar", getStringImage(bitmap));
+                        intent.putExtra("tgl",tglmm);
+                        intent.putExtra("nis",nism);
+                        intent.putExtra("jam",jamm);
+                        intent.putExtra("kegiatan",kegiatanm);
+                        intent.putExtra("lokasi",lokasim);
+                        intent.putExtra("user", userm);
+                        startActivity(intent);
+
                         Log.d("TAG", "onResponse: "+s);
                     }
                 },

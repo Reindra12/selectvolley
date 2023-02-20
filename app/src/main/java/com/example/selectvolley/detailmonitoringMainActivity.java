@@ -1,18 +1,20 @@
 package com.example.selectvolley;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Base64;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class detailmonitoringMainActivity<PNG> extends AppCompatActivity {
     public static final String URLSELECTM = "http://192.168.56.2/PROJEK/SELECTINDI.php";
-    TextView idmtext, tglmtext,nistext, jamtext, kegiatantext, lokasitext, usertext;
-    String idmtextA, tglmtextA,nistextA, jamtextA, kegiatantextA, lokasitextA, usertextA;
-    TextView fototext;
-    Drawable fototextA;
-
+    TextView idmtext, tglmtext, nistext, jamtext, kegiatantext, lokasitext, usertext;
+    String idmtextA, tglmtextA, nistextA, jamtextA, kegiatantextA, lokasitextA, usertextA, stringImage;
+    ImageView gambar;
 
 
     @Override
@@ -28,17 +30,18 @@ public class detailmonitoringMainActivity<PNG> extends AppCompatActivity {
         kegiatantext = findViewById(R.id.kegiatanm2);
         lokasitext = findViewById(R.id.lokasim2);
         usertext = findViewById(R.id.user2);
-        fototext = findViewById(R.id.foto2);
+        gambar = findViewById(R.id.foto2);
 
 
         idmtextA = getIntent().getStringExtra("idm");
-        tglmtextA = getIntent().getStringExtra("tglm");
+        tglmtextA = getIntent().getStringExtra("tgl");
         nistextA = getIntent().getStringExtra("nis");
         jamtextA = getIntent().getStringExtra("jam");
         kegiatantextA = getIntent().getStringExtra("kegiatan");
         lokasitextA = getIntent().getStringExtra("lokasi");
         usertextA = getIntent().getStringExtra("user");
-//        fototextA = getIntent()d.get("foto");
+        stringImage = getIntent().getStringExtra("gambar");
+
 
         idmtext.setText(idmtextA);
         tglmtext.setText(tglmtextA);
@@ -48,19 +51,13 @@ public class detailmonitoringMainActivity<PNG> extends AppCompatActivity {
         lokasitext.setText(lokasitextA);
         usertext.setText(usertextA);
 //        fototext.set(fototextA);
+        byte[] decodedString = Base64.decode(stringImage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+        gambar.setImageBitmap(decodedByte);
 
-
-}
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == 100){
-//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//
-//        }
-//    }
 
     }
+
+}
 
