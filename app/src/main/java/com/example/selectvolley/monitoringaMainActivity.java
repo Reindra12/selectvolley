@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 public class monitoringaMainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-    public static final String URLSELECT = "http://192.168.43.159/PROJEK/SELECTM.php";
-    public static final String URLDELETE = "http://192.168.43.159/PROJEK/DELETEM.php";
-    public static final String URLEDIT = "http://192.168.43.159/PROJEK/EDITM.php";
-    public static final String URLINSERT = "http://192.168.43.159/PROJEK/INSERTM.php";
+    public static final String URLSELECT = "http://192.168.1.11/PROJEK/SELECTM.php";
+    public static final String URLDELETE = "http://192.168.1.11/PROJEK/DELETEM.php";
+    public static final String URLEDIT = "http://192.168.1.11/PROJEK/EDITM.php";
+    public static final String URLINSERT = "http://192.168.1.11/PROJEK/INSERTM.php";
     ListView list;
     SwipeRefreshLayout swipe;
     List<Datamonitoring> itemList = new ArrayList<Datamonitoring>();

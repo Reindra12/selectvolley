@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -16,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -32,6 +36,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.util.IOUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +52,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class monitoringMainActivity extends AppCompatActivity {
-    public static final String url = "http://192.168.1.15/monitoring/fileupload.php";
+    public static final String url = "http://192.168.1.2/monitoring/fileupload.php";
+    private static final String push_notification = "http://192.168.1.2/monitoring/push_notification.php";
+
     EditText idm, tglm, nis, jam, kegiatan, lokasi, user;
     TextView tket;
     Button binput;
@@ -54,6 +63,8 @@ public class monitoringMainActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private Byte aByte;
     String imageString;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +80,9 @@ public class monitoringMainActivity extends AppCompatActivity {
         lokasi = (EditText) findViewById(R.id.nis5);
         user = (EditText) findViewById(R.id.nis6);
         binput = (Button) findViewById(R.id.btnnilai);
+        askNotificationPermission();
+
+        subcribesTopic();
 
 
         binput.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +107,79 @@ public class monitoringMainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 100);
             }
         });
+    }
+
+    private void subcribesTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("monitoring")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed";
+                        if (!task.isSuccessful()) {
+                            msg = "Subscribe failed";
+                        }
+                        Log.d("TAG", msg);
+                        Toast.makeText(monitoringMainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // FCM SDK (and your app) can post notifications.
+                } else {
+                    // TODO: Inform user that that your app will not show notifications.
+                }
+            });
+
+    private void askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+
+    private void sendNotification() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, push_notification,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // handle response from server
+                        Toast.makeText(monitoringMainActivity.this, ""+response, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // handle error
+                        Toast.makeText(monitoringMainActivity.this, ""+error, Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+//                params.put("title", "Test Notification");
+//                params.put("message", "This is a test notification from Android App");
+                return params;
+            }
+        };
+
+        // Add request to the RequestQueue.
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
     @Override
@@ -148,6 +235,8 @@ public class monitoringMainActivity extends AppCompatActivity {
 //                        loading.dismiss();
                         //Showing toast message of the response
                         Toast.makeText(monitoringMainActivity.this, s , Toast.LENGTH_LONG).show();
+                        sendNotification();
+
 //                        send data when data success
                         Intent intent = new Intent(monitoringMainActivity.this, detailmonitoringMainActivity.class);
                         intent.putExtra("gambar", getStringImage(bitmap));

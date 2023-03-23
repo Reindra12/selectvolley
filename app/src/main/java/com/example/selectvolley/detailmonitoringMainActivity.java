@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class detailmonitoringMainActivity<PNG> extends AppCompatActivity {
-    public static final String URLSELECTM = "http://192.168.56.2/PROJEK/SELECTINDI.php";
+    public static final String URLSELECTM = "http://192.168.1.11/PROJEK/SELECTINDI.php";
     TextView idmtext, tglmtext, nistext, jamtext, kegiatantext, lokasitext, usertext;
     String idmtextA, tglmtextA, nistextA, jamtextA, kegiatantextA, lokasitextA, usertextA, stringImage;
     ImageView gambar;
